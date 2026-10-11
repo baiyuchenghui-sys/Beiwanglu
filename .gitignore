@@ -1,0 +1,72 @@
+# 日志、临时文件和系统缓存
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.temp
+*~
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# 编辑器个人配置
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# 保留可共享的 VS Code 启动配置和任务；需要时可启用下方规则。
+#.vscode/
+
+# Flutter、Dart 和依赖缓存；保留 pubspec.lock 以固定应用依赖版本
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# 调试符号
+app.*.symbols
+
+# 混淆映射
+app.*.map.json
+
+# Android 构建产物和缓存
+/android/app/debug
+/android/app/profile
+/android/app/release
+**/.gradle/
+**/.kotlin/
+**/.cxx/
+**/.externalNativeBuild/
+**/build/
+*.apk
+*.aab
+*.apks
+*.ipa
+
+# 组件预览缓存
+.widget_preview/
+
+# 本机环境配置和应用签名密钥
+**/local.properties
+**/key.properties
+*.jks
+*.keystore
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
