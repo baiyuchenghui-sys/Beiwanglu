@@ -19,6 +19,24 @@ void main() {
     expect(store.plansForDate('2026-11-01'), hasLength(1));
   });
 
+  test('已勾选的待办事项只在勾选当天显示', () {
+    final store = UniverseStore();
+    store.todos = [
+      {
+        'id': 1,
+        'kind': '计划',
+        'date': '2026-10-01',
+        'title': '已经完成',
+        'is_done': 1,
+        'completed_at': '2026-10-03',
+      },
+    ];
+
+    expect(store.plansForDate('2026-10-02'), isEmpty);
+    expect(store.plansForDate('2026-10-03'), hasLength(1));
+    expect(store.plansForDate('2026-10-04'), isEmpty);
+  });
+
   test('工作日安排只从开始日期起在周一至周五出现', () {
     expect(dailyRunsOnDate('2026-10-05', '1,2,3,4,5', '2026-10-04'), isFalse);
     expect(dailyRunsOnDate('2026-10-05', '1,2,3,4,5', '2026-10-05'), isTrue);
@@ -96,6 +114,7 @@ void main() {
         'title': '已完成的旧事项',
         'start_time': '07:00',
         'is_done': 1,
+        'completed_at': '2026-10-02',
       },
       {
         'id': 2,

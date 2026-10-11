@@ -3,6 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('首页显示自定义励志话语并提供编辑入口', (tester) async {
+    final store = UniverseStore()..homeMotto = '今天也要向前一步';
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: HomePage(store: store, onGo: (_) {}),
+      ),
+    );
+    expect(find.text('今天也要向前一步'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('编辑励志话语'));
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(TextField, '写一句鼓励自己的话'), findsOneWidget);
+    expect(find.text('今天也要向前一步'), findsWidgets);
+  });
+
   testWidgets('安排页先显示每日安排，且切换项位于待办事项之前', (tester) async {
     final store = UniverseStore();
     final today = dayKey(DateTime.now());

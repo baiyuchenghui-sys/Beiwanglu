@@ -67,6 +67,7 @@ class UniverseStore extends ChangeNotifier with WidgetsBindingObserver {
       transactions = [],
       entertainment = [];
   String theme = 'system';
+  String homeMotto = '把注意力留给今天';
   int weekStart = 1;
   double monthlyBudget = 0;
   double openingBalance = 0;
@@ -134,6 +135,7 @@ class UniverseStore extends ChangeNotifier with WidgetsBindingObserver {
     await _default('monthly_budget', '0');
     await _default('opening_balance', '0');
     await _default('month_start_day', '1');
+    await _default('home_motto', '把注意力留给今天');
     await refresh();
     WidgetsBinding.instance.addObserver(this);
     _dayTimer = Timer.periodic(const Duration(minutes: 1), (_) {
@@ -182,6 +184,7 @@ class UniverseStore extends ChangeNotifier with WidgetsBindingObserver {
     transactions = await db.query('transactions', orderBy: 'date DESC,id DESC');
     entertainment = await db.query('entertainment', orderBy: 'id DESC');
     theme = await _setting('theme');
+    homeMotto = await _setting('home_motto');
     weekStart = int.tryParse(await _setting('week_start')) ?? 1;
     monthlyBudget = double.tryParse(await _setting('monthly_budget')) ?? 0;
     openingBalance = double.tryParse(await _setting('opening_balance')) ?? 0;
@@ -313,6 +316,12 @@ class UniverseStore extends ChangeNotifier with WidgetsBindingObserver {
     await _set('monthly_budget', '0');
     await _set('opening_balance', '0');
     await _set('month_start_day', '1');
+    await _set('home_motto', '把注意力留给今天');
+    await refresh();
+  }
+
+  Future<void> setHomeMotto(String value) async {
+    await _set('home_motto', value);
     await refresh();
   }
 
@@ -321,7 +330,8 @@ class UniverseStore extends ChangeNotifier with WidgetsBindingObserver {
         .where(
           (item) =>
               item['kind'] == '计划' &&
-              (item['date'] as String).compareTo(date) <= 0,
+              (item['date'] as String).compareTo(date) <= 0 &&
+              (item['is_done'] != 1 || item['completed_at'] == date),
         )
         .map(Map<String, dynamic>.from)
         .toList();
@@ -632,7 +642,12 @@ class HomePage extends StatelessWidget {
       children: [
         PageHeader(
           '每日小宇宙',
-          subtitle: '${DateTime.now().month}月${DateTime.now().day}日 · 把注意力留给今天',
+          subtitle: store.homeMotto,
+          action: IconButton(
+            tooltip: '编辑励志话语',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: () => homeMottoEditor(context, store),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1684,6 +1699,33 @@ Future<void> editor(
     ),
   ),
 );
+Future<void> homeMottoEditor(BuildContext context, UniverseStore store) async {
+  final motto = TextEditingController(text: store.homeMotto);
+  await editor(
+    context,
+    title: '编辑励志话语',
+    fields: (_) => [
+      TextField(
+        controller: motto,
+        autofocus: true,
+        maxLines: 2,
+        maxLength: 80,
+        decoration: const InputDecoration(labelText: '写一句鼓励自己的话'),
+      ),
+    ],
+    save: () async {
+      final value = motto.text.trim();
+      if (value.isEmpty) {
+        toast(context, '请输入励志话语');
+        return false;
+      }
+      await store.setHomeMotto(value);
+      return true;
+    },
+  );
+  motto.dispose();
+}
+
 Future<void> todoEditor(
   BuildContext c,
   UniverseStore s, [
